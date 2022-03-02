@@ -157,7 +157,7 @@ contract Arnen is ERC721URIStorage, Ownable, VRFConsumerBase {
         return requestRandomness(keyHash, fee);
     }
 
-    function viewContents() external returns(Content[] memory ) {
+    function viewContents() external view returns(Content[] memory ) {
         Content[] memory lContents = new Content[](contentIndex);
         for (uint i = 0; i < contentIndex; i++) {
             Content storage lContent = contents[i];

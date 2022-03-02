@@ -18,6 +18,8 @@ contract Arnen is ERC721URIStorage, Ownable, VRFConsumerBase {
         uint txTime;
         bool isTokenHolder;
         bool active;
+        uint mode;
+        uint validity;
     }
     struct ContentCreator {
         uint id;
@@ -78,13 +80,14 @@ contract Arnen is ERC721URIStorage, Ownable, VRFConsumerBase {
         return creatorIndex;
     }
 
-    function checkTokenHolder(address _address) public view returns(bool) {
-        return tokenHolders[_address].isTokenHolder;
+    function checkTokenHolder() public view returns(bool) {
+        return tokenHolders[msg.sender].isTokenHolder;
     }
-    function checkTokenValidity(address _address) public view returns(string memory) {
-        uint tokenId = tokenHolders[_address].tokenId;
-        return tokenURI(tokenId);
+
+    function checkTokenValidity() public view returns(bool status) {
+        status = tokenHolders[msg.sender].active;
     }
+
     function openNFTSale() public onlyOwner {
         saleIsActive = true;
     }
@@ -125,7 +128,7 @@ contract Arnen is ERC721URIStorage, Ownable, VRFConsumerBase {
     function renewNft(uint256 _validity, Mode _mode, string memory tokenURI) public payable {
         require(saleIsActive, "Can't Purchase NFT as at this time");
         nftMode = _mode;
-        if(!checkTokenHolder(msg.sender)) revert("No NFT");
+        if(!checkTokenHolder()) revert("No NFT");
         uint userTokenId = tokenHolders[msg.sender].tokenId;
         if(uint256(nftMode) == 0) {
             require(msg.value >= mintPricePerDay * _validity, "Insufficient Funds");
@@ -170,6 +173,12 @@ contract Arnen is ERC721URIStorage, Ownable, VRFConsumerBase {
         return lContents;
     }
 
+    function getContent(uint _id) external view returns(Content memory) {
+        require(_id < contentIndex, "Content does not exist");
+        Content storage lContent = contents[_id];
+        return lContent;
+    }
+
     /**
      * Callback function used by VRF Coordinator
      */
@@ -204,6 +213,32 @@ contract Arnen is ERC721URIStorage, Ownable, VRFConsumerBase {
             emit CreatorPaid(creatorAddress, amountPerCreator, block.timestamp);
         }
     } 
+
+    function updateNftValidity() public onlyOwner {
+        uint tokenId = tokenHolders[msg.sender].tokenId;
+        uint validity = tokenHolders[msg.sender].validity;
+        if(tokenHolders[msg.sender].mode == 0) {
+            uint diff = block.timestamp - tokenHolders[msg.sender].txTime;
+            diff = diff / 86400;
+            if(diff >= validity) {
+                tokenHolders[msg.sender].validity = 0;
+                tokenHolders[msg.sender].active = false;
+            } else {
+                tokenHolders[msg.sender].validity = validity - diff;
+            }
+        } else if(tokenHolders[msg.sender].mode == 1) {
+            tokenHolders[msg.sender].validity -= 1;
+            if(tokenHolders[msg.sender].validity == 0) {
+                tokenHolders[msg.sender].active = false;
+            }
+        }
+        tokenHolders[msg.sender].txTime = block.timestamp;
+    }
+
+    function getTokenHolder() external view returns(TokenHolder memory) {
+        TokenHolder storage lTokenHolder = tokenHolders[msg.sender];
+        return lTokenHolder;
+    }
 
     receive() external payable {}
     fallback() external payable {}

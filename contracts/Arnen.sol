@@ -31,7 +31,7 @@ contract Arnen is ERC721URIStorage, Ownable, VRFConsumerBase {
         string title;
         string image;
         string text;
-        mapping(address => ContentCreator) creator;
+        uint creatorId;
     }
     mapping(uint => Content) public contents;
     uint private contentIndex;
@@ -118,9 +118,7 @@ contract Arnen is ERC721URIStorage, Ownable, VRFConsumerBase {
             holderAddresses.push(msg.sender);
             _tokenIds.increment();
         }
-        
     }
-
     function renewNft(uint256 _validity, Mode _mode, string memory tokenURI) public payable {
         require(saleIsActive, "Can't Purchase NFT as at this time");
         nftMode = _mode;
@@ -136,12 +134,8 @@ contract Arnen is ERC721URIStorage, Ownable, VRFConsumerBase {
             require(msg.value >= mintPricePerActivity * _validity, "Insufficient Funds");
             _safeMint(msg.sender, userTokenId);
             _setTokenURI(userTokenId, tokenURI);
-        }
-        
+        } 
     }
-
-
-
     // update - change NFT validity after 24 hours for Time based and after a click for activity baseed NFT
 
     function tipPlatform() public payable returns (bool) {
@@ -163,6 +157,15 @@ contract Arnen is ERC721URIStorage, Ownable, VRFConsumerBase {
         return requestRandomness(keyHash, fee);
     }
 
+    function viewContents() external returns(Content[] memory ) {
+        Content[] memory lContents = new Content[](contentIndex);
+        for (uint i = 0; i < contentIndex; i++) {
+            Content storage lContent = contents[i];
+            lContents[i] = lContent;
+        }
+        return lContents;
+    }
+
     /**
      * Callback function used by VRF Coordinator
      */
@@ -180,12 +183,6 @@ contract Arnen is ERC721URIStorage, Ownable, VRFConsumerBase {
         emit SentTipped(beneficiary, beneficiaryAmount, data);
         require(sent, "Failed to send Ether");
     }
-
-    
-
-    
-    
-
     receive() external payable {}
     fallback() external payable {}
 }

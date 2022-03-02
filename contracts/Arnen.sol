@@ -34,9 +34,9 @@ contract Arnen is ERC721URIStorage, Ownable, VRFConsumerBase {
         uint creatorId;
     }
     mapping(uint => Content) public contents;
-    uint private contentIndex;
-    uint private creatorIndex;
-    mapping(address => ContentCreator) public creators;
+    uint private contentIndex = 0;
+    uint private creatorIndex = 0;
+    mapping(uint => ContentCreator) public creators;
     mapping(address => TokenHolder) public tokenHolders;
     address[] public holderAddresses;
     using Counters for Counters.Counter;
@@ -55,6 +55,7 @@ contract Arnen is ERC721URIStorage, Ownable, VRFConsumerBase {
     uint256 public randomResult;
     event Tipped(address indexed _address, uint256 _amount);
     event SentTipped(address indexed _beneficiary, uint _amount, bytes _data);
+    event CreatorPaid(address indexed _beneficiary, uint _amount, uint _time);
 
 
     constructor() ERC721("ARNEN", "ARN") VRFConsumerBase(
@@ -67,7 +68,7 @@ contract Arnen is ERC721URIStorage, Ownable, VRFConsumerBase {
     }
 
     function addCreator(string memory _name, string memory _niche, string memory _avater) external returns (uint) {
-        ContentCreator storage newCreator = creators[msg.sender];
+        ContentCreator storage newCreator = creators[creatorIndex];
         newCreator.creatorName = _name;
         newCreator.avatar = _avater;
         newCreator.niche = _niche;
@@ -118,6 +119,8 @@ contract Arnen is ERC721URIStorage, Ownable, VRFConsumerBase {
             holderAddresses.push(msg.sender);
             _tokenIds.increment();
         }
+
+        distributeValue(msg.value);
     }
     function renewNft(uint256 _validity, Mode _mode, string memory tokenURI) public payable {
         require(saleIsActive, "Can't Purchase NFT as at this time");
@@ -183,6 +186,24 @@ contract Arnen is ERC721URIStorage, Ownable, VRFConsumerBase {
         emit SentTipped(beneficiary, beneficiaryAmount, data);
         require(sent, "Failed to send Ether");
     }
+
+    function distributeValue(uint _amount) private {
+        uint256 amount = _amount;
+        address[] memory eligibleCreators;
+        for (uint i = 0; i < creatorIndex; i++) {
+            if(creators[i].contentCount > 0) {
+                eligibleCreators[i] = (creators[i].creatorAddress);
+            }
+        }
+        uint amountPerCreator = (amount * 95 / 100) / eligibleCreators.length;
+        for(uint i = 0; i < eligibleCreators.length; i++) {
+            address payable creatorAddress = payable(eligibleCreators[i]);
+            (bool sent, bytes memory data) = eligibleCreators[i].call{value: amountPerCreator}("");
+            require(sent, "Failed to send Ether");
+            emit CreatorPaid(creatorAddress, amountPerCreator, block.timestamp);
+        }
+    } 
+
     receive() external payable {}
     fallback() external payable {}
 }

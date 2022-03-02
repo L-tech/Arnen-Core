@@ -138,6 +138,7 @@ contract Arnen is ERC721URIStorage, Ownable, VRFConsumerBase {
             _safeMint(msg.sender, userTokenId);
             _setTokenURI(userTokenId, tokenURI);
         } 
+        distributeValue(msg.value);
     }
     // update - change NFT validity after 24 hours for Time based and after a click for activity baseed NFT
 

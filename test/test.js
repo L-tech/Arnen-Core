@@ -1,10 +1,12 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
-describe("Greeter", function () {
-  it("Should return the new greeting once it's changed", async function () {
+describe("Arnen", function () {
+  it("Should return the status of NFT sale", async function () {
+    const Content = await ethers.getContractFactory("Contents");
+    const content = await Content.deploy();
     const Arnen = await ethers.getContractFactory("Arnen");
-    const arnen = await Arnen.deploy("");
+    const arnen = await Arnen.deploy(content.address);
     await arnen.deployed();
 
     expect(await arnen.saleIsActive()).to.equal(false);

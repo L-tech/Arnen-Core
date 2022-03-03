@@ -7,9 +7,10 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBase.sol";
-import "./utils/Base64.sol";
+import "./Contents.sol";
 
 contract Arnen is ERC721URIStorage, Ownable, VRFConsumerBase {
+    address private contentAddress;
     bool public saleIsActive;
     mapping(address => uint256[]) public holderTokendIds;
     struct TokenHolder {
@@ -21,24 +22,6 @@ contract Arnen is ERC721URIStorage, Ownable, VRFConsumerBase {
         uint mode;
         uint validity;
     }
-    struct ContentCreator {
-        uint id;
-        address creatorAddress;
-        string creatorName;
-        string niche;
-        string avatar;
-        uint contentCount;
-    }
-    struct Content {
-        string title;
-        string image;
-        string text;
-        uint creatorId;
-    }
-    mapping(uint => Content) public contents;
-    uint private contentIndex = 0;
-    uint private creatorIndex = 0;
-    mapping(uint => ContentCreator) public creators;
     mapping(address => TokenHolder) public tokenHolders;
     address[] public holderAddresses;
     using Counters for Counters.Counter;
@@ -48,9 +31,7 @@ contract Arnen is ERC721URIStorage, Ownable, VRFConsumerBase {
         Activity
     }
     Mode public nftMode;
-    uint public minTip = 350000000000000;
-    uint public mintPricePerDay = 280000000000000; 
-    uint public mintPricePerActivity = 1700000000000000; // 1.7 Matic tokens
+    uint public mintPricePerDay = 280000000000000;
     uint public totalAmountTipped = 0; 
     bytes32 internal keyHash;
     uint256 internal fee;
@@ -60,25 +41,17 @@ contract Arnen is ERC721URIStorage, Ownable, VRFConsumerBase {
     event CreatorPaid(address indexed _beneficiary, uint _amount, uint _time);
 
 
-    constructor() ERC721("ARNEN", "ARN") VRFConsumerBase(
+    constructor(address _addr) ERC721("ARNEN", "ARN") VRFConsumerBase(
             0xb3dCcb4Cf7a26f6cf6B120Cf5A73875B7BBc655B, // VRF Coordinator
             0x01BE23585060835E02B77ef475b0Cc51aA1e0709  // LINK Token
         ) payable {
         _tokenIds.increment();
         keyHash = 0x2ed0feb3e7fd2022120aa84fab1945545a9f2ffc9076fd6156fa96eaff4c1311;
         fee = 0.2 * 10 ** 18; // 0.1 LINK (Varies by network)
+        contentAddress = _addr;
     }
 
-    function addCreator(string memory _name, string memory _niche, string memory _avater) external returns (uint) {
-        ContentCreator storage newCreator = creators[creatorIndex];
-        newCreator.creatorName = _name;
-        newCreator.avatar = _avater;
-        newCreator.niche = _niche;
-        newCreator.creatorAddress = msg.sender;
-        newCreator.id = creatorIndex;
-        creatorIndex += 1;
-        return creatorIndex;
-    }
+    
 
     function checkTokenHolder() public view returns(bool) {
         return tokenHolders[msg.sender].isTokenHolder;
@@ -97,6 +70,7 @@ contract Arnen is ERC721URIStorage, Ownable, VRFConsumerBase {
     function getTokenHoldersCount() public view returns(uint) {
         return holderAddresses.length;
     }
+    
     function mint(uint256 _validity, Mode _mode, string memory tokenURI) public payable {
         require(saleIsActive, "Sale Closed");
         nftMode = _mode;
@@ -112,7 +86,7 @@ contract Arnen is ERC721URIStorage, Ownable, VRFConsumerBase {
             _tokenIds.increment();
         }
         else if(uint256(nftMode) == 1) {
-            require(msg.value >= mintPricePerActivity * _validity, "Insufficient Funds");
+            require(msg.value >= 1700000000000000 * _validity, "Insufficient Funds");
             _safeMint(msg.sender, _tokenIds.current());
             _setTokenURI(_tokenIds.current(), tokenURI);
             tokenHolders[msg.sender].holderAddress= msg.sender;
@@ -126,7 +100,7 @@ contract Arnen is ERC721URIStorage, Ownable, VRFConsumerBase {
         distributeValue(msg.value);
     }
     function renewNft(uint256 _validity, Mode _mode, string memory tokenURI) public payable {
-        require(saleIsActive, "Can't Purchase NFT as at this time");
+        require(saleIsActive, "Closed");
         nftMode = _mode;
         if(!checkTokenHolder()) revert("No NFT");
         uint userTokenId = tokenHolders[msg.sender].tokenId;
@@ -137,48 +111,34 @@ contract Arnen is ERC721URIStorage, Ownable, VRFConsumerBase {
             _tokenIds.increment();
         }
         else if(uint256(nftMode) == 1) {
-            require(msg.value >= mintPricePerActivity * _validity, "Insufficient Funds");
+            require(msg.value >= 1700000000000000 * _validity, "Insufficient Funds");
             _safeMint(msg.sender, userTokenId);
             _setTokenURI(userTokenId, tokenURI);
         } 
         distributeValue(msg.value);
     }
+
     // update - change NFT validity after 24 hours for Time based and after a click for activity baseed NFT
 
     function tipPlatform() public payable returns (bool) {
-        require(msg.value >= minTip, "Minimum tip is 0.00035");
+        require(msg.value >= 350000000000000, "below minimum tip");
         totalAmountTipped += msg.value;
         emit Tipped(msg.sender, msg.value);
         return true;
     }
 
-    function tipCreator(address _address) public payable {
+    function tipCreator(address _address) public payable returns(bool) {
         address payable creatorAddress = payable(_address);
-        require(msg.value > 0, "Tip cannot be 0");
+        require(msg.value > 0, "Add Tip");
         (bool success, ) = creatorAddress.call{value: msg.value}("");
         emit Tipped(msg.sender, msg.value);
+        return success;
     }
 
     function getRandomNumber() public returns (bytes32 requestId) {
         require(LINK.balanceOf(address(this)) >= fee, "Not enough LINK");
         return requestRandomness(keyHash, fee);
     }
-
-    function viewContents() external view returns(Content[] memory ) {
-        Content[] memory lContents = new Content[](contentIndex);
-        for (uint i = 0; i < contentIndex; i++) {
-            Content storage lContent = contents[i];
-            lContents[i] = lContent;
-        }
-        return lContents;
-    }
-
-    function getContent(uint _id) external view returns(Content memory) {
-        require(_id < contentIndex, "Content does not exist");
-        Content storage lContent = contents[_id];
-        return lContent;
-    }
-
     /**
      * Callback function used by VRF Coordinator
      */
@@ -194,28 +154,20 @@ contract Arnen is ERC721URIStorage, Ownable, VRFConsumerBase {
         totalAmountTipped -= msg.value;
         payable(owner()).transfer(msg.value - beneficiaryAmount);
         emit SentTipped(beneficiary, beneficiaryAmount, data);
-        require(sent, "Failed to send Ether");
+        require(sent, "Failed");
     }
-
     function distributeValue(uint _amount) private {
-        uint256 amount = _amount;
-        address[] memory eligibleCreators;
-        for (uint i = 0; i < creatorIndex; i++) {
-            if(creators[i].contentCount > 0) {
-                eligibleCreators[i] = (creators[i].creatorAddress);
-            }
-        }
-        uint amountPerCreator = (amount * 95 / 100) / eligibleCreators.length;
+        Contents instanceContnet = Contents(contentAddress);
+        (uint amountPerCreator, address[] memory eligibleCreators) = instanceContnet.getEligibleCreators(_amount);
         for(uint i = 0; i < eligibleCreators.length; i++) {
             address payable creatorAddress = payable(eligibleCreators[i]);
-            (bool sent, bytes memory data) = eligibleCreators[i].call{value: amountPerCreator}("");
+            (bool sent, ) = eligibleCreators[i].call{value: amountPerCreator}("");
             require(sent, "Failed to send Ether");
             emit CreatorPaid(creatorAddress, amountPerCreator, block.timestamp);
         }
     } 
 
     function updateNftValidity() public onlyOwner {
-        uint tokenId = tokenHolders[msg.sender].tokenId;
         uint validity = tokenHolders[msg.sender].validity;
         if(tokenHolders[msg.sender].mode == 0) {
             uint diff = block.timestamp - tokenHolders[msg.sender].txTime;
@@ -234,7 +186,6 @@ contract Arnen is ERC721URIStorage, Ownable, VRFConsumerBase {
         }
         tokenHolders[msg.sender].txTime = block.timestamp;
     }
-
     function getTokenHolder() external view returns(TokenHolder memory) {
         TokenHolder storage lTokenHolder = tokenHolders[msg.sender];
         return lTokenHolder;

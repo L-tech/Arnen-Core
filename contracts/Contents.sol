@@ -16,10 +16,18 @@ contract Contents {
         string text;
         uint creatorId;
     }
+    struct Stream {
+        string title;
+        uint creatorId;
+        string playbackUrl;
+
+    }
     mapping(uint => Content) public contents;
     uint private contentIndex = 0;
     mapping(uint => ContentCreator) public creators;
     uint private creatorIndex = 0;
+    mapping(uint => Stream) public streams;
+    uint private streamIndex = 0;
 
     function viewContents() external view returns(Content[] memory ) {
         Content[] memory lContents = new Content[](contentIndex);
@@ -71,5 +79,21 @@ contract Contents {
                 return creators[i];
             }
         }
+    }
+    function addStream(string memory _title, string memory _playbackUrl) external {
+        Stream storage newStream = streams[streamIndex];
+        newStream.creatorId = getCreator().id;
+        newStream.title = _title;
+        newStream.playbackUrl = _playbackUrl;
+        streamIndex += 1;
+    }
+    
+    function getStreams() public view returns(Stream[] memory) {
+        Stream[] memory lStreams = new Stream[](streamIndex);
+        for (uint i = 0; i < streamIndex; i++) {
+            Stream storage lStream = streams[i];
+            lStreams[i] = lStream;
+        }
+        return lStreams;
     }
 }

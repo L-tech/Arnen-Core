@@ -16,7 +16,7 @@ import {
 // using them with ethers
 import ArnenArtifact from "../contracts/Arnen.json";
 import arnenAddress from "../contracts/Arnen-contract-address.json";
-
+import useInterval from "use-interval";
 import ContentArtifact from "../contracts/Contents.json";
 import contentAddress from "../contracts/Contents-contract-address.json";
 // import { NFTStorage, File } from "nft.storage";
@@ -27,7 +27,9 @@ import { NoWalletDetected } from "./NoWalletDetected";
 
 import { Stream } from "./stream";
 import NFTImage from "./assets/arnen_nft.png";
-import { Router, Route, Switch } from "react-router-dom";
+import { Router, Route, Switch, useHistory } from "react-router-dom";
+import { useArnenContext, ArnenContext } from "../utils/context";
+import { useContractService } from "../utils/super-class";
 // const SECRET_API_KEY =
 //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDBkNjY2NjEyMzdCMzM3MzUyYTE5NTBhY2VDMDhkMUZCNDc1QzEwRjUiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY0NjQ2NzE3OTYwMSwibmFtZSI6ImFybmVuIn0.ncDV7DnQiVIPOsZEdcsTgHEAZ6lNcrSYkYXqJnssBgQ";
 
@@ -60,12 +62,6 @@ import { Router, Route, Switch } from "react-router-dom";
 // Here's a list of network ids https://docs.metamask.io/guide/ethereum-provider.html#properties
 // to use when deploying to other networks.
 const HARDHAT_NETWORK_ID = "31337";
-
-const ArnenContext = React.createContext({
-  address: null,
-  contract: null,
-  contentContract: null,
-});
 
 // This is an error code that indicates that the user canceled a transaction
 const ERROR_CODE_TX_REJECTED_BY_USER = 4001;
@@ -203,6 +199,9 @@ export class Dapp extends React.Component {
       ArnenArtifact.abi,
       this._provider.getSigner(0)
     );
+    this.setState({
+      tick: 1,
+    });
   }
 
   // This method just clears part of the state.
@@ -340,19 +339,6 @@ const useMintAccessNFT = () => {
   };
 };
 
-const useOptionInterval = (options) => {
-  const [index, setIndex] = useState(0);
-  const interval = useCallback(() => {
-    setIndex((index + 1) % options.length);
-  }, [options, setIndex]);
-
-  useEffect(() => {
-    const intervalId = setInterval(interval, 1000);
-    return () => clearInterval(intervalId);
-  }, [interval]);
-  return options[index];
-};
-
 const features = [
   {
     name: "Own and trade your platform access",
@@ -397,7 +383,18 @@ const NFTMintModal = () => {
   const { isTokenHolder, mintAccess, isMinting } = useMintAccessNFT();
   const [view, setView] = useState("base");
   const { address } = useContext(ArnenContext);
+  const [name, setName] = useState("");
+  const [niche, setNiche] = useState("");
+  const [livePeerURL, setLivePeerURL] = useState("");
 
+  const { signUpAsContentCreator } = useContractService();
+
+  useEffect(() => {
+    if (isTokenHolder) {
+      history.push("/stream");
+    }
+  }, [isTokenHolder]);
+  const history = useHistory();
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-[60] flex items-center justify-center">
       <div className="relative inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
@@ -411,14 +408,24 @@ const NFTMintModal = () => {
           <div className="mt-3 text-center sm:mt-5">
             {view === "register-content-creator" ? (
               <div className="space-y-3 -mb-4">
-                <Input label="Name" className="" value="" onChange={() => {}} />
+                <Input
+                  label="Name"
+                  className=""
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+
                 <Input
                   value="Niche"
                   label="Content Niche"
-                  value=""
-                  onChange={() => {}}
+                  value={niche}
+                  onChange={(e) => setNiche(e.target.value)}
                 />
-                <Input label="Live Peer URL" value="" onChange={() => {}} />
+                <Input
+                  label="Live Peer URL"
+                  value={livePeerURL}
+                  onChange={(e) => setLivePeerURL(e.target.value)}
+                />
                 <div className="flex gap-x-4 pt-4">
                   <button
                     onClick={() => {
@@ -430,11 +437,13 @@ const NFTMintModal = () => {
                     Cancel
                   </button>
                   <button
-                    onClick={() => {
-                      setView("register-content-creator");
+                    onClick={async () => {
+                      await signUpAsContentCreator(name, niche, livePeerURL);
+
+                      // setView("register-content-creator");
                     }}
                     type="button"
-                    className="gap-x-2 items-center bg-blue-500 whitespace-nowrap w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 text-base font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    className="gap-x-2 items-center text-blue-500 whitespace-nowrap w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 text-base font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                   >
                     <FiAward className="text-white" />
                     <span>Sign Up</span>
@@ -502,7 +511,8 @@ const NFTMintModal = () => {
 };
 
 const Welcome = (props) => {
-  const { address, contract } = useContext(ArnenContext);
+  const { address, contract } = useArnenContext();
+  console.log(address, contract);
 
   return (
     <div className="w-screen h-screen overflow-y-auto bg-gradient-to-t from-gray-200 relative">

@@ -5,11 +5,13 @@ import { FiStar, FiVideo } from "react-icons/fi";
 import ReactHlsPlayer from "react-hls-player";
 import { TipBar } from "./tipbar";
 import { useArnenContext } from "../utils/context";
+import { useStreams } from "../utils/super-class";
 
 export const Stream = () => {
   const name = "brogrammer94";
   const niche = "programming";
   const { address, contract } = useArnenContext();
+  const streams = useStreams();
 
   const history = useHistory();
   useEffect(() => {
@@ -17,6 +19,15 @@ export const Stream = () => {
       history.replace("/");
     }
   }, [address]);
+
+  console.log(streams);
+  const main = streams[0] ?? {
+    name: "",
+    streamURL: "",
+  };
+
+  const [, ...others] = streams;
+  console.log(main);
 
   return (
     <div className="bg-white">
@@ -34,7 +45,7 @@ export const Stream = () => {
       <div className=" max-w-2xl rounded-xl overflow-hidden mx-auto sm:px-6 lg:max-w-7xl lg:px-8">
         <div className="border shadow-sm mt-10 rounded-xl overflow-hidden">
           <ReactHlsPlayer
-            src="https://cdn.livepeer.com/hls/bcdddg9137xhgkco/index.m3u8"
+            src={main.streamURL}
             autoPlay={false}
             controls={true}
             width="100%"
@@ -51,13 +62,14 @@ export const Stream = () => {
           {/* Description and details */}
           <div className="lg:col-span-2 lg:pr-8">
             <h1 className="text-2xl font-extrabold tracking-tight text-blue-500 sm:text-3xl">
-              @{name}
+              @{main.name}
             </h1>
           </div>
+
           <div className="flex items-start flex-col gap-y-2">
             <h3 className="sr-only">Description</h3>
             <p className="text-sm rounded-full mt-2 bg-indigo-500 text-white font-semibold px-3 py-1">
-              {niche}
+              {main.niche}
             </p>
             <div className="space-y-6">
               <p className="text-base text-gray-900">
@@ -68,6 +80,16 @@ export const Stream = () => {
             </div>
           </div>
         </div>
+        <ul className="col-span-1">
+          <h1 className="font-semibold pb-2 text-lg">All Streams</h1>
+          {streams.map((stream) => (
+            <li key={stream.name} className="shadow px-4 py-2 rounded-xl">
+              <div className="flex items-center">
+                <h1 className="font-semibold">@{stream.name}</h1>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );

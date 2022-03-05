@@ -17,7 +17,8 @@
     "react-hls-player": "^3.0.7",
     "react-icons": "^4.3.1",
     "react-router-dom": "^5.3.0",
-    "react-scripts": "3.4.1"
+    "react-scripts": "3.4.1",
+    "use-interval": "^1.4.0"
   },
   "scripts": {
     "start": "concurrently \"npx tailwindcss -i ./src/index.css -o ./src/App.css --watch\"  \"react-scripts start\"",

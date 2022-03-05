@@ -12,6 +12,7 @@ function getFiles() {
     const fileInput = document.querySelector('input[type="file"]')
     return fileInput.files
 }
+
 async function storeFiles(files) {
     const client = makeStorageClient()
     const cid = await client.put(files)

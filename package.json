@@ -28,5 +28,8 @@
     "hardhat-contract-sizer": "^2.5.0",
     "lodash": "^4.17.21",
     "nft.storage": "^6.0.0"
+  },
+  "scripts": {
+    "start": "node_modules/next/dist/bin/next start -p $PORT"
   }
 }

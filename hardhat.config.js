@@ -36,10 +36,10 @@ module.exports = {
     hardhat: {
       chainId: 31337,
     },
-    // mumbai: {
-    //   url: process.env.PROD_ALCHEMY_KEY,
-    //   accounts: [process.env.PRIVATE_KEY],
-    // }
+    mumbai: {
+      url: process.env.PROD_ALCHEMY_KEY,
+      accounts: [process.env.PRIVATE_KEY],
+    }
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,

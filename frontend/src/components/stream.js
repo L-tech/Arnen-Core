@@ -1,15 +1,13 @@
-import * as AspectRatio from "@radix-ui/react-aspect-ratio";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { FiStar, FiVideo } from "react-icons/fi";
+import { FiVideo } from "react-icons/fi";
 import ReactHlsPlayer from "react-hls-player";
 import { TipBar } from "./tipbar";
 import { useArnenContext } from "../utils/context";
 import { useStreams } from "../utils/super-class";
 
 export const Stream = () => {
-  const name = "brogrammer94";
-  const niche = "programming";
+  const [activeStream, setActiveStream] = useState(0);
   const { address, contract } = useArnenContext();
   const streams = useStreams();
 
@@ -20,14 +18,12 @@ export const Stream = () => {
     }
   }, [address]);
 
-  console.log(streams);
-  const main = streams[0] ?? {
+  const main = streams[activeStream] ?? {
     name: "",
     streamURL: "",
   };
 
   const [, ...others] = streams;
-  console.log(main);
 
   return (
     <div className="bg-white">
@@ -82,8 +78,14 @@ export const Stream = () => {
         </div>
         <ul className="col-span-1">
           <h1 className="font-semibold pb-2 text-lg">All Streams</h1>
-          {streams.map((stream) => (
-            <li key={stream.name} className="shadow px-4 py-2 rounded-xl">
+          {streams.map((stream, index) => (
+            <li
+              onClick={(e) => {
+                setActiveStream(index);
+              }}
+              key={stream.name}
+              className="shadow px-4 py-2 rounded-xl"
+            >
               <div className="flex items-center">
                 <h1 className="font-semibold">@{stream.name}</h1>
               </div>

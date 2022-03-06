@@ -1,8 +1,8 @@
 import React from "react";
 import { useTip } from "../utils/tip";
 import { FiRadio, FiHeart, FiLoader, FiDollarSign } from "react-icons/fi";
-export const TipBar = () => {
-  const { tip, isTipping } = useTip();
+export const TipBar = ({ creatorAddress }) => {
+  const { tipPlatform, tipCreator, isTipping } = useTip();
 
   return (
     <div className="flex gap-x-2 py-1">
@@ -14,15 +14,27 @@ export const TipBar = () => {
         <FiHeart />
         <span>Like</span>
       </button>
+      {creatorAddress ? (
+        <button
+          onClick={async () => {
+            await tipCreator(creatorAddress);
+          }}
+          disabled={isTipping}
+          className="flex px-4 py-2 font-semibold gap-x-1 items-center rounded-full hover:text-green-600 shadow"
+        >
+          {isTipping ? <FiLoader /> : <FiDollarSign />}
+          <span>Tip Platform</span>
+        </button>
+      ) : null}
       <button
-        onClick={() => {
-          tip();
+        onClick={async () => {
+          await tipPlatform();
         }}
         disabled={isTipping}
         className="flex px-4 py-2 font-semibold gap-x-1 items-center rounded-full hover:text-green-600 shadow"
       >
         {isTipping ? <FiLoader /> : <FiDollarSign />}
-        <span>Tip</span>
+        <span>Tip Platform</span>
       </button>
     </div>
   );

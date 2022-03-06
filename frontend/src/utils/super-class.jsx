@@ -1,6 +1,6 @@
 import { useArnenContext } from "./context";
 import { useEffect, useState } from "react";
-import useInterval from "use-interval";
+
 import { ethers } from "ethers";
 
 export const useStreams = () => {

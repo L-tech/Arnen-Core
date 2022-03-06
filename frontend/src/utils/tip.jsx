@@ -6,17 +6,26 @@ export const useTip = () => {
   const { address, contract } = useArnenContext();
   const [isTipping, setIsTipping] = useState(false);
 
-  const tip = async () => {
+  const tipPlatform = async () => {
     setIsTipping(true);
 
-    const res = await contract.tip({
+    const res = await contract.tipPlatform({
+      value: ethers.utils.parseEther("0.01"),
+    });
+    setIsTipping(false);
+  };
+
+  const tipCreator = async (creatorAddress) => {
+    setIsTipping(true);
+    const res = await contract.tipCreator(creatorAddress, {
       value: ethers.utils.parseEther("0.01"),
     });
     setIsTipping(false);
   };
 
   return {
-    tip,
+    tipPlatform,
+    tipCreator,
     isTipping,
   };
 };

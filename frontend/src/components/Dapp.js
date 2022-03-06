@@ -344,25 +344,25 @@ const features = [
     name: "Own and trade your platform access",
     icon: FiLock,
     description:
-      "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit perferendis suscipit eaque, iste dolor cupiditate blanditiis ratione.",
+      "Your subscription has value, you should be able to trade this with other users on the platform.",
   },
   {
     name: "Get paid for the content you create",
     icon: FiDollarSign,
     description:
-      "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit perferendis suscipit eaque, iste dolor cupiditate blanditiis ratione.",
+      "Community owned means that you will receive a large portion of the revenue from the platform.",
   },
   {
     name: "Support your favorite content creators",
     icon: FiHeart,
     description:
-      "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit perferendis suscipit eaque, iste dolor cupiditate blanditiis ratione.",
+      "Feel comfortable knowing that your content is supported by a community of users, and that you're able to give content creators their fair share of the revenue.",
   },
   {
     name: "Get access to perks and rewards for your support",
     icon: FiGift,
     description:
-      "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit perferendis suscipit eaque, iste dolor cupiditate blanditiis ratione.",
+      "Supporting your favorite content creators allows them to make more of the content you love, this in turn creates more revenue for the platform, anyone who owns a subscription for the platform is elligible to receive part of the proceeds.",
   },
 ];
 
@@ -512,7 +512,6 @@ const NFTMintModal = () => {
 
 const Welcome = (props) => {
   const { address, contract } = useArnenContext();
-  console.log(address, contract);
 
   return (
     <div className="w-screen h-screen overflow-y-auto bg-gradient-to-t from-gray-200 relative">

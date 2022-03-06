@@ -565,6 +565,21 @@ Ensure the default browser behavior of the `hidden` attribute.
   margin-right: auto;
 }
 
+.-mx-20 {
+  margin-left: -5rem;
+  margin-right: -5rem;
+}
+
+.-mx-10 {
+  margin-left: -2.5rem;
+  margin-right: -2.5rem;
+}
+
+.-mx-8 {
+  margin-left: -2rem;
+  margin-right: -2rem;
+}
+
 .mt-3 {
   margin-top: 0.75rem;
 }
@@ -768,12 +783,24 @@ Ensure the default browser behavior of the `hidden` attribute.
   grid-template-columns: 120px 1fr;
 }
 
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.grid-cols-\[220px\2c 1fr\] {
+  grid-template-columns: 220px 1fr;
+}
+
 .grid-rows-\[84px\2c 400px\2c 1fr\] {
   grid-template-rows: 84px 400px 1fr;
 }
 
 .grid-rows-\[82px\2c 1fr\] {
   grid-template-rows: 82px 1fr;
+}
+
+.grid-rows-\[220px\2c 1fr\] {
+  grid-template-rows: 220px 1fr;
 }
 
 .flex-col {
@@ -814,6 +841,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .gap-12 {
   gap: 3rem;
+}
+
+.gap-4 {
+  gap: 1rem;
 }
 
 .gap-y-2 {
@@ -1057,6 +1088,16 @@ Ensure the default browser behavior of the `hidden` attribute.
   padding-right: 5rem;
 }
 
+.px-10 {
+  padding-left: 2.5rem;
+  padding-right: 2.5rem;
+}
+
+.py-10 {
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
+}
+
 .pt-5 {
   padding-top: 1.25rem;
 }
@@ -1087,6 +1128,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .pt-10 {
   padding-top: 2.5rem;
+}
+
+.pb-10 {
+  padding-bottom: 2.5rem;
 }
 
 .text-left {
@@ -1615,6 +1660,42 @@ Ensure the default browser behavior of the `hidden` attribute.
     grid-template-columns: 1fr 432px;
   }
 
+  .lg\:grid-cols-\[340px\2c 340px\2c 340px\] {
+    grid-template-columns: 340px 340px 340px;
+  }
+
+  .lg\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .lg\:grid-cols-\[510px\2c 510px\] {
+    grid-template-columns: 510px 510px;
+  }
+
+  .lg\:grid-cols-\[410px\2c 510px\] {
+    grid-template-columns: 410px 510px;
+  }
+
+  .lg\:grid-cols-\[510px\2c 610px\] {
+    grid-template-columns: 510px 610px;
+  }
+
+  .lg\:grid-cols-\[610px\2c 510px\] {
+    grid-template-columns: 610px 510px;
+  }
+
+  .lg\:grid-cols-\[540px\2c 510px\] {
+    grid-template-columns: 540px 510px;
+  }
+
+  .lg\:grid-cols-\[550px\2c 510px\] {
+    grid-template-columns: 550px 510px;
+  }
+
+  .lg\:grid-cols-\[560px\2c 510px\] {
+    grid-template-columns: 560px 510px;
+  }
+
   .lg\:grid-rows-\[auto\2c auto\2c 1fr\] {
     grid-template-rows: auto auto 1fr;
   }
@@ -1653,6 +1734,21 @@ Ensure the default browser behavior of the `hidden` attribute.
   .lg\:py-16 {
     padding-top: 4rem;
     padding-bottom: 4rem;
+  }
+
+  .lg\:px-40 {
+    padding-left: 10rem;
+    padding-right: 10rem;
+  }
+
+  .lg\:px-32 {
+    padding-left: 8rem;
+    padding-right: 8rem;
+  }
+
+  .lg\:px-20 {
+    padding-left: 5rem;
+    padding-right: 5rem;
   }
 
   .lg\:pb-24 {

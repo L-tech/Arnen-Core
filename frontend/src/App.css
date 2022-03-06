@@ -748,8 +748,24 @@ Ensure the default browser behavior of the `hidden` attribute.
           animation: spin 1s linear infinite;
 }
 
+.cursor-pointer {
+  cursor: pointer;
+}
+
 .grid-cols-2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid-cols-\[240px\2c 240px\2c 240px\] {
+  grid-template-columns: 240px 240px 240px;
+}
+
+.grid-cols-\[340px\2c 340px\2c 340px\] {
+  grid-template-columns: 340px 340px 340px;
+}
+
+.grid-cols-\[120px\2c 1fr\] {
+  grid-template-columns: 120px 1fr;
 }
 
 .grid-rows-\[84px\2c 400px\2c 1fr\] {
@@ -786,6 +802,18 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .justify-between {
   justify-content: space-between;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.gap-8 {
+  gap: 2rem;
+}
+
+.gap-12 {
+  gap: 3rem;
 }
 
 .gap-y-2 {
@@ -893,6 +921,11 @@ Ensure the default browser behavior of the `hidden` attribute.
   border-color: rgb(243 244 246 / var(--tw-border-opacity));
 }
 
+.border-red-500 {
+  --tw-border-opacity: 1;
+  border-color: rgb(239 68 68 / var(--tw-border-opacity));
+}
+
 .bg-black {
   --tw-bg-opacity: 1;
   background-color: rgb(0 0 0 / var(--tw-bg-opacity));
@@ -931,6 +964,11 @@ Ensure the default browser behavior of the `hidden` attribute.
 .bg-blue-600 {
   --tw-bg-opacity: 1;
   background-color: rgb(37 99 235 / var(--tw-bg-opacity));
+}
+
+.bg-gray-100 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(243 244 246 / var(--tw-bg-opacity));
 }
 
 .bg-opacity-50 {
@@ -1014,6 +1052,11 @@ Ensure the default browser behavior of the `hidden` attribute.
   padding-right: 0.5rem;
 }
 
+.px-20 {
+  padding-left: 5rem;
+  padding-right: 5rem;
+}
+
 .pt-5 {
   padding-top: 1.25rem;
 }
@@ -1040,6 +1083,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .pb-2 {
   padding-bottom: 0.5rem;
+}
+
+.pt-10 {
+  padding-top: 2.5rem;
 }
 
 .text-left {

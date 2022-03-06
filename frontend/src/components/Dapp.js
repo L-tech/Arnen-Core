@@ -30,6 +30,7 @@ import NFTImage from "./assets/arnen_nft.png";
 import { Router, Route, Switch, useHistory } from "react-router-dom";
 import { useArnenContext, ArnenContext } from "../utils/context";
 import { useContractService } from "../utils/super-class";
+import { ContentPage } from "./content";
 
 // const SECRET_API_KEY =
 //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDBkNjY2NjEyMzdCMzM3MzUyYTE5NTBhY2VDMDhkMUZCNDc1QzEwRjUiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY0NjQ2NzE3OTYwMSwibmFtZSI6ImFybmVuIn0.ncDV7DnQiVIPOsZEdcsTgHEAZ6lNcrSYkYXqJnssBgQ";
@@ -120,7 +121,9 @@ export class Dapp extends React.Component {
               dismiss={() => this.setState({ networkError: undefined })}
             />
           </Route>
-
+          <Route path="/content" exact>
+            <ContentPage />
+          </Route>
           <Route path="/stream" exact>
             <Stream />
           </Route>
@@ -392,7 +395,7 @@ const NFTMintModal = () => {
 
   useEffect(() => {
     if (isTokenHolder) {
-      history.push("/stream");
+      history.push("/content");
     }
   }, [isTokenHolder]);
   const history = useHistory();

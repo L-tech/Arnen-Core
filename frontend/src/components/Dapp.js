@@ -439,8 +439,6 @@ const NFTMintModal = () => {
                   <button
                     onClick={async () => {
                       await signUpAsContentCreator(name, niche, livePeerURL);
-
-                      // setView("register-content-creator");
                     }}
                     type="button"
                     className="gap-x-2 items-center text-blue-500 whitespace-nowrap w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 text-base font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"

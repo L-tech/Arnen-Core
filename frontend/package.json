@@ -22,7 +22,7 @@
   },
   "scripts": {
     "start": "concurrently \"npx tailwindcss -i ./src/index.css -o ./src/App.css --watch\"  \"react-scripts start\"",
-    "build": "react-scripts build",
+    "build": "npx tailwindcss -i ./src/index.css -o ./src/App.css && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

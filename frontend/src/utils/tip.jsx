@@ -10,7 +10,7 @@ export const useTip = () => {
     setIsTipping(true);
 
     const res = await contract.tipPlatform({
-      value: ethers.utils.parseEther("0.01"),
+      value: ethers.utils.parseEther("0.5"),
     });
     setIsTipping(false);
   };
@@ -18,7 +18,7 @@ export const useTip = () => {
   const tipCreator = async (creatorAddress) => {
     setIsTipping(true);
     const res = await contract.tipCreator(creatorAddress, {
-      value: ethers.utils.parseEther("0.01"),
+      value: ethers.utils.parseEther("0.5"),
     });
     setIsTipping(false);
   };
